@@ -1,4 +1,4 @@
-# Kaillera Server Startup Scripts (2.0.0)
+# Kaillera Server Startup Scripts (1.0.0)
 Startup scripts for the Kaillera game server - uses the "screen" command to manage session. This also restarts the Kaillera server process if it crashes.
 
 Official support sites: [Official Github Repo](https://github.com/fstltna/KaillerasrvStartup)
