@@ -1,0 +1,61 @@
+#!/usr/bin/perl
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 1, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+my $KAILLERASRVDIR = "/root/kaillerasrv-0.86";
+my $SCREENCMD = "/usr/bin/screen";
+
+# No changes below here...
+
+my $exists = "";
+
+# Set ENV vars
+$ENV{'TERM'} = "xterm-256color";
+
+my $running=`ps ax|grep kaillerasrv|grep -v grep|grep -v startkaillera`;
+
+# check if Kaillera server process is running
+if ($running ne "")
+{
+	print ("Startupscript already running...\n");
+	exit (0);
+}
+
+while (-1)
+{
+	chdir $KAILLERASRVDIR;
+	# check if Kaillera server process is running
+	$running=`ps ax|grep kaillerasrv|grep -v grep|grep -v startkaillera`;
+	if ($running eq "")
+	{
+		print "Kaillera server not running\n";
+		# See if they want the server started
+		if (! -f "$KAILLERASRVDIR/nostart")
+		{
+			# The Log Entry
+			my $datestring = localtime();
+			my $TIME="Kaillera server Down, Restarting: $datestring";
+			open(OUTF, ">>$KAILLERASRVDIR/KailleraServerScreen.log") || die "Unable to open $KAILLERASRVDIR/KailleraServerScreen.log for appending";
+			print (OUTF "$TIME\n");
+			close($OUTF);
+			chdir $KAILLERASRVDIR;
+			print "Starting screen process\n";
+			system("$SCREENCMD -fa -S KailleraServer -d -U -m $KAILLERASRVDIR/kaillerasrv");
+		}
+	}
+	# Sleep for 5 minutes before checking again
+	sleep(300);
+}
+exit(0);
